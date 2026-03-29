@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookFace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+</head>
+<body>
+<div class="app-container">
+  <div class="sidebar" id="sidebar">
+    <img src="{{ user_profile_image }}" alt="Avatar" class="avatar">
+    <div class="username">{{ username }}</div>
+    <div class="nav-container">
+      <div class="nav-item" onclick="navigateTo('edit_profile')">
+        <i class="fas fa-user-edit"></i>
+        <span class="nav-text">Личный кабинет</span>
+      </div>
+      <div class="nav-item active" onclick="navigateTo('library')">
+        <i class="fas fa-book"></i>
+        <span class="nav-text">Моя библиотека</span>
+      </div>
+      <div class="nav-item" onclick="navigateTo('favorites')">
+        <i class="fas fa-star"></i>
+        <span class="nav-text">Избранное</span>
+      </div>
+      <div class="nav-item" onclick="navigateTo('tinder')">
+        <i class="fas fa-heart"></i>
+        <span class="nav-text">Книжный тиндер</span>
+      </div>
+      <div class="nav-item" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span class="nav-text">Выйти</span>
+      </div>
+    </div>
+    <div class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-chevron-left"></i>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="header">
+      <div class="site-title">BookFace</div>
+    </div>
+    <div class="content">
+      <div id="edit_profile-content" class="tab-content">
+        <form id="editProfileForm" onsubmit="return updateProfile(event)">
+          <div class="form-group">
+            <label for="editProfileImage">Фотография:</label>
+            <input type="file" id="editProfileImage" name="profile_image" onchange="previewProfileImage(event)">
+          </div>
+          <div class="form-group">
+            <label for="editUsername">Имя пользователя:</label>
+            <input type="text" id="editUsername" name="username">
+          </div>
+          <div class="form-group">
+            <label for="editEmail">Email:</label>
+            <input type="email" id="editEmail" name="email">
+          </div>
+          <div class="form-group">
+            <label for="currentPassword">Текущий пароль:</label>
+            <input type="password" id="currentPassword" name="current_password">
+          </div>
+          <div class="form-group">
+            <label for="editPassword">Новый пароль:</label>
+            <input type="password" id="editPassword" name="password">
+          </div>
+          <div class="form-actions">
+            <button type="submit">Сохранить</button>
+            <button type="button" onclick="cancelEdit()">Отменить</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="library-content" class="tab-content active">
+        <div class="search-container">
+          <input type="text" id="bookSearch" placeholder="Поиск по автору или названию...">
+          <button onclick="searchBooks(event)">Поиск</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+        <div class="tabs">
+          <button class="tab-button active" onclick="openTab('planned')">Планирую</button>
+          <button class="tab-button" onclick="openTab('reading')">Читаю</button>
+          <button class="tab-button" onclick="openTab('read')">Прочитано</button>
+        </div>
+        <div id="planned" class="tab-content active">
+          <h3>Запланированные книги</h3>
+          <div class="book-list" id="plannedBooks"></div>
+        </div>
+        <div id="reading" class="tab-content">
+          <h3>Читаю сейчас</h3>
+          <div class="book-list" id="readingBooks"></div>
+        </div>
+        <div id="read" class="tab-content">
+          <h3>Прочитанные книги</h3>
+          <div class="book-list" id="readBooks"></div>
+        </div>
+      </div>
+
+      <div id="favorites-content" class="tab-content">
+        <div class="search-results" id="favoritesBooks"></div>
+      </div>
+
+      <div id="tinder-content" class="tab-content">
+        <div class="tinder-container">
+          <div class="tinder-card" id="currentBook"></div>
+          <div class="tinder-actions">
+            <button class="tinder-like" onclick="likeBook()">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="tinder-dislike" onclick="dislikeBook()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="status-message" id="statusMessage"></div>
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
+</body>
+</html>

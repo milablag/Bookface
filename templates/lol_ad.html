@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookFace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="app-container">
+  <div class="sidebar" id="sidebar">
+    <img src="{{ user_profile_image }}" alt="Avatar" class="avatar">
+    <div class="username">{{ username }}</div>
+
+    <div class="nav-container">
+      <div class="nav-item active" onclick="navigateTo('library')">
+        <i class="fas fa-book"></i>
+        <span class="nav-text">Библиотека</span>
+      </div>
+      <div class="nav-item" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span class="nav-text">Выйти</span>
+      </div>
+    </div>
+
+    <div class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-chevron-left"></i>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="header">
+      <div class="site-title">BookFace</div>
+    </div>
+
+    <div class="content">
+      <div id="libraryContent">
+        <div class="search-container">
+          <input type="text" id="bookSearch" placeholder="Поиск по автору или названию...">
+          <button onclick="searchBooks(event)">Поиск</button>
+          <button class="show-all-btn" onclick="showAllBooks()">Показать все</button>
+          <button class="add-book-btn" onclick="showAddBookForm()">Добавить книгу</button>
+        </div>
+
+        <div id="addBookForm">
+          <h3>Добавить новую книгу</h3>
+          <form id="bookForm">
+            <div class="form-group">
+              <label>Название книги</label>
+              <input type="text" id="bookTitle" required>
+            </div>
+            <div class="form-group">
+              <label>Автор</label>
+              <input type="text" id="bookAuthor" required>
+            </div>
+            <div class="form-group">
+              <label>Жанр</label>
+              <select id="bookGenre" required onchange="checkOtherGenre(this)">
+                <option value="">Выберите жанр</option>
+                <option value="Фантастика">Фантастика</option>
+                <option value="Детектив">Детектив</option>
+                <option value="Роман">Роман</option>
+                <option value="Биография">Биография</option>
+                <option value="Поэзия">Поэзия</option>
+                <option value="Драма">Драма</option>
+                <option value="Другое">Другое</option>
+              </select>
+              <input type="text" id="otherGenreInput" style="display: none; margin-top: 5px;" placeholder="Укажите жанр">
+            </div>
+            <div class="form-group">
+              <label>Год издания</label>
+              <input type="number" id="bookYear" min="1000" max="2099" step="1" placeholder="Год">
+            </div>
+            <div class="form-group">
+              <label>Описание</label>
+              <textarea id="bookDescription"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Картинка</label>
+              <input type="file" id="bookImage" accept="image/*">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="submit-btn" onclick="addBook()">Добавить</button>
+              <button type="button" class="cancel-btn" onclick="hideAddBookForm()">Отмена</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="search-results" id="searchResults">
+        </div>
+      </div>
+
+<div id="editBookModal">
+  <button class="close-btn" onclick="hideEditBookModal()">&times;</button>
+  <h3>Редактировать книгу</h3>
+  <form id="editBookForm">
+    <input type="hidden" id="editBookId">
+    <div class="form-group">
+      <label>Название книги</label>
+      <input type="text" id="editBookTitle" required>
+    </div>
+    <div class="form-group">
+      <label>Автор</label>
+      <input type="text" id="editBookAuthor" required>
+    </div>
+    <div class="form-group">
+      <label>Жанр</label>
+      <select id="editBookGenre" required onchange="checkOtherGenre(this)">
+        <option value="">Выберите жанр</option>
+        <option value="Фантастика">Фантастика</option>
+        <option value="Детектив">Детектив</option>
+        <option value="Роман">Роман</option>
+        <option value="Биография">Биография</option>
+        <option value="Поэзия">Поэзия</option>
+        <option value="Драма">Драма</option>
+        <option value="Другое">Другое</option>
+      </select>
+      <input type="text" id="editOtherGenreInput" style="display: none; margin-top: 5px;" placeholder="Укажите жанр">
+    </div>
+    <div class="form-group">
+      <label>Год издания</label>
+      <input type="number" id="editBookYear" min="1000" max="2099" step="1" placeholder="Год">
+    </div>
+    <div class="form-group">
+      <label>Описание</label>
+      <textarea id="editBookDescription"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Картинка</label>
+      <input type="file" id="editBookImage" accept="image/*">
+    </div>
+    <div class="form-actions">
+      <button type="button" class="submit-btn" onclick="updateBook()">Сохранить</button>
+      <button type="button" class="cancel-btn" onclick="hideEditBookModal()">Отмена</button>
+    </div>
+  </form>
+</div>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
