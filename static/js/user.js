@@ -2,6 +2,7 @@ let currentActiveTab = 'planned';
   let currentActiveSection = 'library';
   let tinderBooks = [];
   let currentTinderIndex = 0;
+  let currentMarathonTab = 'all';
 
   document.addEventListener('DOMContentLoaded', function () {
       loadUserBooks('planned');
@@ -87,6 +88,9 @@ let currentActiveTab = 'planned';
               break;
           case 'favorites':
               loadFavorites();
+              break;
+          case 'marathons':
+              loadMarathons(currentMarathonTab);
               break;
           case 'tinder':
               if (!tinderBooks || tinderBooks.length === 0) {
@@ -636,6 +640,400 @@ let currentActiveTab = 'planned';
           imageContainer.appendChild(actionsDiv);
       }
   }
+
+  function openMarathonTab(tabName) {
+      currentMarathonTab = tabName;
+      document.querySelectorAll('#marathons-content .tab-button').forEach(button => {
+          button.classList.remove('active');
+      });
+      document.querySelector(`#marathons-content .tab-button[onclick="openMarathonTab('${tabName}')"]`).classList.add('active');
+      document.querySelectorAll('#marathons-content .tab-content').forEach(content => {
+          content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}Marathons`).classList.add('active');
+      loadMarathons(tabName);
+  }
+
+  function loadMarathons(type) {
+      const containerId = `${type}MarathonsList`;
+      const container = document.getElementById(containerId);
+
+      fetch(`/get_${type}_marathons`)
+          .then(response => response.json())
+          .then(data => {
+              if (data.length === 0) {
+                  container.innerHTML = `<div class="no-books">${getNoMarathonsMessage(type)}</div>`;
+              } else {
+                  displayMarathons(data, container, type);
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              container.innerHTML = '<div class="no-books">Ошибка загрузки</div>';
+          });
+  }
+
+  function getNoMarathonsMessage(type) {
+      const messages = {
+          'all': 'Нет доступных марафонов',
+          'my': 'Вы не создали ни одного марафона',
+          'active': 'Нет активных марафонов',
+          'completed': 'Нет завершенных марафонов'
+      };
+      return messages[type] || 'Марафоны не найдены';
+  }
+
+  function displayMarathons(marathons, container, type) {
+      container.innerHTML = '';
+      if (marathons.length === 0) {
+          container.innerHTML = `<div class="no-books">${getNoMarathonsMessage(type)}</div>`;
+          return;
+      }
+
+      marathons.forEach(marathon => {
+          const marathonCard = document.createElement('div');
+          marathonCard.className = 'marathon-card';
+          marathonCard.setAttribute('data-marathon-id', marathon.id);
+
+          let actionsHTML = '';
+          let progressHTML = '';
+
+          if (type === 'active') {
+              progressHTML = `
+                  <div class="progress-container">
+                      <p class="marathon-meta"><strong>Прогресс:</strong> ${marathon.progress || 0}/${marathon.book_count}</p>
+                      <div class="progress-bar" style="background-color: #f0f0f0; height: 10px; border-radius: 5px; margin-top: 5px;">
+                          <div class="progress-fill" style="height: 100%; border-radius: 5px; background-color: #4CAF50; width: ${(marathon.progress/marathon.book_count)*100}%"></div>
+                      </div>
+                  </div>
+              `;
+
+              actionsHTML = `
+                  <div class="marathon-actions" onclick="toggleMarathonActions(event, ${marathon.id})">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <div class="marathon-actions-menu">
+                          <button onclick="showProgressModal(${marathon.id})">
+                              <i class="fas fa-edit"></i> Отметить прогресс
+                          </button>
+                          <button onclick="leaveMarathon(${marathon.id})">
+                              <i class="fas fa-sign-out-alt"></i> Покинуть
+                          </button>
+                      </div>
+                  </div>
+              `;
+          }
+          else if (type === 'my') {
+              const isParticipating = marathon.is_participant;
+
+              actionsHTML = `
+                  <div class="marathon-actions" onclick="toggleMarathonActions(event, ${marathon.id})">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <div class="marathon-actions-menu">
+                          ${!isParticipating ? `
+                          <button onclick="joinMarathon(${marathon.id})">
+                              <i class="fas fa-sign-in-alt"></i> Присоединиться
+                          </button>
+                          ` : ''}
+                          <button onclick="showEditMarathonModal(${marathon.id})">
+                              <i class="fas fa-edit"></i> Редактировать
+                          </button>
+                          <button onclick="deleteMarathon(${marathon.id})">
+                              <i class="fas fa-trash"></i> Удалить
+                          </button>
+                      </div>
+                  </div>
+              `;
+          }
+          else if (type === 'all') {
+              if (!marathon.is_joined && !marathon.is_creator) {
+                  actionsHTML = `
+                      <div class="marathon-actions" onclick="toggleMarathonActions(event, ${marathon.id})">
+                          <i class="fas fa-ellipsis-v"></i>
+                          <div class="marathon-actions-menu">
+                              <button onclick="joinMarathon(${marathon.id})">
+                                  <i class="fas fa-sign-in-alt"></i> Присоединиться
+                              </button>
+                          </div>
+                      </div>
+                  `;
+              }
+          }
+
+          const creatorInfo = marathon.is_creator ? '' :
+              marathon.creator_name ? `<p class="marathon-meta"><strong>Автор:</strong> ${marathon.creator_name}</p>` : '';
+
+          marathonCard.innerHTML = `
+              ${actionsHTML}
+              <h3 class="marathon-title">${marathon.name}</h3>
+              ${creatorInfo}
+              <p class="marathon-meta"><strong>Книг:</strong> ${marathon.book_count}</p>
+              ${marathon.duration ? `<p class="marathon-meta"><strong>Срок:</strong> ${marathon.duration}</p>` : ''}
+              ${marathon.description ? `<p class="marathon-description"><strong>Описание:</strong> ${marathon.description}</p>` : ''}
+              ${progressHTML}
+          `;
+          container.appendChild(marathonCard);
+      });
+  }
+
+  function toggleMarathonActions(event, marathonId) {
+      event.stopPropagation();
+      const marathonActions = event.currentTarget.querySelector('.marathon-actions-menu');
+      if (marathonActions.style.display === 'block') {
+          marathonActions.style.display = 'none';
+      } else {
+          document.querySelectorAll('.marathon-actions-menu').forEach(menu => {
+              menu.style.display = 'none';
+          });
+          marathonActions.style.display = 'block';
+      }
+  }
+
+  function leaveMarathon(marathonId) {
+      fetch('/leave_marathon', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ marathon_id: marathonId })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              showStatusMessage(data.message);
+              loadMarathons('my');
+              loadMarathons('active');
+              loadMarathons('all');
+              loadMarathons('completed');
+          } else {
+              showStatusMessage(data.message || 'Ошибка', true);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          showStatusMessage('Произошла ошибка', true);
+      });
+  }
+
+  function updateMarathonListsAfterRemoval() {
+      const marathonContainers = [
+          'allMarathonsList',
+          'myMarathonsList',
+          'activeMarathonsList',
+          'completedMarathonsList'
+      ];
+
+      marathonContainers.forEach(containerId => {
+          const container = document.getElementById(containerId);
+          if (container && container.children.length === 0) {
+              container.innerHTML = '<div class="no-books">Марафоны не найдены</div>';
+          }
+      });
+  }
+
+  function showAddMarathonForm() {
+      document.getElementById('addMarathonForm').style.display = 'block';
+      document.getElementById('marathonName').focus();
+      document.getElementById('marathonForm').reset();
+      document.getElementById('marathonDurationValue').value = '30';
+  }
+
+
+  function hideAddMarathonForm() {
+      document.getElementById('addMarathonForm').style.display = 'none';
+      document.getElementById('marathonForm').reset();
+  }
+
+  function addMarathon(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('marathonName').value.trim();
+      const bookCount = document.getElementById('marathonBookCount').value;
+      const durationValue = document.getElementById('marathonDurationValue').value;
+      const durationUnit = document.getElementById('marathonDurationUnit').value;
+      const description = document.getElementById('marathonDescription').value.trim();
+
+      if (!name || !bookCount || !durationValue) {
+          showStatusMessage('Пожалуйста, заполните все обязательные поля', true);
+          return false;
+      }
+
+      const durationText = `${durationValue} ${getDurationUnitText(durationValue, durationUnit)}`;
+
+      fetch('/add_marathon', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              name: name,
+              book_count: bookCount,
+              duration: durationText,
+              description: description
+          })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              showStatusMessage(`Марафон "${name}" успешно добавлен!`);
+              hideAddMarathonForm();
+              openMarathonTab('my');
+          } else {
+              showStatusMessage('Ошибка: ' + (data.message || 'Неизвестная ошибка'), true);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          showStatusMessage('Произошла ошибка при добавлении марафона', true);
+      });
+
+      return false;
+  }
+
+
+  function getDurationUnitText(value, unit) {
+      const num = parseInt(value);
+      if (unit === 'days') {
+          return num === 1 ? 'день' : num < 5 ? 'дня' : 'дней';
+      } else if (unit === 'months') {
+          return num === 1 ? 'месяц' : num < 5 ? 'месяца' : 'месяцев';
+      } else {
+          return num === 1 ? 'год' : num < 5 ? 'года' : 'лет';
+      }
+  }
+
+  function joinMarathon(marathonId) {
+      fetch('/join_marathon', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ marathon_id: marathonId })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              showStatusMessage('Вы успешно присоединились к марафону!');
+              loadMarathons('my');
+              loadMarathons('active');
+              loadMarathons('all');
+          } else {
+              showStatusMessage(data.message || 'Ошибка при присоединении к марафону', true);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          showStatusMessage('Произошла ошибка при присоединении к марафону', true);
+      });
+  }
+
+  function showEditMarathonModal(marathonId) {
+      fetch(`/get_marathon/${marathonId}`)
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  document.getElementById('editMarathonId').value = data.id;
+                  document.getElementById('editMarathonName').value = data.name;
+                  document.getElementById('editMarathonBookCount').value = data.book_count;
+
+                  if (data.duration) {
+                      const durationMatch = data.duration.match(/^(\d+)\s(.+)/);
+                      if (durationMatch) {
+                          const value = durationMatch[1];
+                          const unitText = durationMatch[2];
+
+                          document.getElementById('editMarathonDurationValue').value = value;
+
+                          let unit = 'days';
+                          if (unitText.includes('месяц')) unit = 'months';
+                          else if (unitText.includes('год')) unit = 'years';
+
+                          document.getElementById('editMarathonDurationUnit').value = unit;
+                      }
+                  }
+
+                  document.getElementById('editMarathonDescription').value = data.description || '';
+                  document.getElementById('editMarathonModal').style.display = 'flex';
+              } else {
+                  showStatusMessage(data.message || 'Ошибка при загрузке данных марафона', true);
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              showStatusMessage('Произошла ошибка при загрузке данных марафона', true);
+          });
+  }
+
+  function deleteMarathon(marathonId) {
+      fetch(`/delete_marathon/${marathonId}`, {
+          method: 'DELETE'
+      })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  showStatusMessage('Марафон успешно удален!');
+                  loadMarathons(currentMarathonTab);
+              } else {
+                  showStatusMessage('Ошибка: ' + data.message, true);
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              showStatusMessage('Произошла ошибка при удалении марафона', true);
+          });
+  }
+
+
+
+  function hideEditMarathonModal() {
+      document.getElementById('editMarathonModal').style.display = 'none';
+      document.getElementById('editMarathonForm').reset();
+  }
+
+  function updateMarathon(event) {
+      event.preventDefault();
+      const marathonId = document.getElementById('editMarathonId').value;
+      const name = document.getElementById('editMarathonName').value.trim();
+      const bookCount = document.getElementById('editMarathonBookCount').value;
+      const durationValue = document.getElementById('editMarathonDurationValue').value;
+      const durationUnit = document.getElementById('editMarathonDurationUnit').value;
+      const description = document.getElementById('editMarathonDescription').value.trim();
+
+      if (!name || !bookCount || !durationValue) {
+          showStatusMessage('Пожалуйста, заполните все обязательные поля', true);
+          return;
+      }
+
+      const durationText = `${durationValue} ${getDurationUnitText(durationValue, durationUnit)}`;
+
+      fetch('/update_marathon', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              marathon_id: marathonId,
+              name: name,
+              book_count: bookCount,
+              duration: durationText,
+              description: description
+          })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              showStatusMessage(`Марафон "${name}" успешно обновлён!`);
+              hideEditMarathonModal();
+              loadMarathons(currentMarathonTab);
+          } else {
+              showStatusMessage('Ошибка: ' + (data.message || 'Неизвестная ошибка'), true);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          showStatusMessage('Произошла ошибка при обновлении марафона', true);
+      });
+  }
+
 
   function getDurationUnitText(value, unit) {
       const num = parseInt(value);

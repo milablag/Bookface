@@ -19,6 +19,10 @@
         <i class="fas fa-book"></i>
         <span class="nav-text">Библиотека</span>
       </div>
+      <div class="nav-item" onclick="navigateTo('marathons')">
+        <i class="fas fa-flag"></i>
+        <span class="nav-text">Марафоны</span>
+      </div>
       <div class="nav-item" onclick="logout()">
         <i class="fas fa-sign-out-alt"></i>
         <span class="nav-text">Выйти</span>
@@ -91,6 +95,97 @@
         <div class="search-results" id="searchResults">
         </div>
       </div>
+
+      <div id="marathonsContent" style="display: none;">
+        <div class="marathon-tabs">
+          <button class="marathon-tab-button active" onclick="openMarathonTab('system')">Системные</button>
+          <button class="marathon-tab-button" onclick="openMarathonTab('user')">Пользовательские</button>
+          <button class="add-marathon-btn" onclick="showAddMarathonForm()">Добавить марафон</button>
+        </div>
+
+        <div id="addMarathonForm">
+          <h3>Добавить новый марафон</h3>
+          <form id="marathonForm">
+            <div class="form-group">
+              <label>Название марафона</label>
+              <input type="text" id="marathonName" required>
+            </div>
+            <div class="form-group">
+              <label>Количество книг</label>
+              <input type="number" id="marathonBookCount" min="1" required>
+            </div>
+            <div class="form-group">
+              <label>Срок</label>
+              <div class="duration-selector">
+                <input type="number" id="marathonDurationValue" min="1" value="30" required>
+                <select id="marathonDurationUnit">
+                  <option value="days">дней</option>
+                  <option value="months">месяцев</option>
+                  <option value="years">лет</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Описание</label>
+              <textarea id="marathonDescription"></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="submit-btn" onclick="addMarathon()">Добавить</button>
+              <button type="button" class="cancel-btn" onclick="hideAddMarathonForm()">Отмена</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="systemMarathons" class="marathon-tab-content active">
+          <div class="marathon-list" id="systemMarathonsList"></div>
+        </div>
+
+        <div id="userMarathons" class="marathon-tab-content">
+          <div class="marathon-list" id="userMarathonsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="editMarathonModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="hideEditMarathonModal()">&times;</span>
+    <h3>Редактировать марафон</h3>
+    <form id="editMarathonForm">
+      <input type="hidden" id="editMarathonId">
+      <div class="form-group">
+        <label>Название марафона</label>
+        <input type="text" id="editMarathonName" required>
+      </div>
+      <div class="form-group">
+        <label>Количество книг</label>
+        <input type="number" id="editMarathonBookCount" min="1" required>
+      </div>
+      <div class="form-group">
+        <label>Срок</label>
+        <div class="duration-selector">
+          <input type="number" id="editMarathonDurationValue" min="1" required>
+          <select id="editMarathonDurationUnit">
+            <option value="days">дней</option>
+            <option value="months">месяцев</option>
+            <option value="years">лет</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Описание</label>
+        <textarea id="editMarathonDescription"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="submit-btn" onclick="updateMarathon()">Сохранить</button>
+        <button type="button" class="cancel-btn" onclick="hideEditMarathonModal()">Отмена</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="status-message" id="statusMessage"></div>
 
 <div id="editBookModal">
   <button class="close-btn" onclick="hideEditBookModal()">&times;</button>
