@@ -382,6 +382,149 @@ body {
         cursor: pointer;
     }
 
+    .marathons-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .add-marathon-btn {
+        background-color: #ffebcd;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: auto;
+    }
+
+    .marathon-tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+        position: relative;
+    }
+
+    .marathon-tab-button {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-right: 5px;
+    }
+
+    .marathon-tab-button.active {
+        border-bottom: 3px solid #F08080;
+        color: #F08080;
+        font-weight: bold;
+    }
+
+    .marathon-tab-content {
+        display: none;
+    }
+
+    .marathon-tab-content.active {
+        display: block;
+        margin-top: 20px;
+    }
+
+    .marathon-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .marathon-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+        word-break: break-word;
+    }
+
+    .marathon-title {
+        font-size: 18px;
+        margin: 0 0 10px 0;
+        color: #333;
+        font-weight: bold;
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    .marathon-meta {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .marathon-description {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
+        word-break: break-word;
+    }
+
+    .marathon-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
+    .marathon-actions-menu {
+        display: none;
+        position: absolute;
+        top: 30px;
+        right: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 10;
+        width: 150px;
+    }
+
+    .marathon-actions-menu button {
+        background: none;
+        border: none;
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .marathon-actions-menu button:hover {
+        background: #f0f0f0;
+    }
+
+    #addMarathonForm {
+        display: none;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    .duration-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .duration-selector input {
+        width: 80px;
+    }
+
     .modal {
         display: none;
         position: fixed;
