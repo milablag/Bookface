@@ -7,6 +7,7 @@ from controllers.auth_controller import auth_bp
 from controllers.user_controller import user_bp
 from controllers.admin_controller import admin_bp
 from controllers.profile_controller import profile_bp
+from controllers.marathon_controller import marathon_bp
 
 from models.database import create_tables
 
@@ -19,6 +20,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(profile_bp)
+app.register_blueprint(marathon_bp)
 
 if __name__ == '__main__':
     create_tables()
