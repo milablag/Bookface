@@ -585,6 +585,96 @@ body {
     .form-actions button[type="button"]:hover {
         background-color: #F08080;
     }
+    /* Стили для марафонов */
+    .marathon-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .marathon-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+        margin-bottom: 20px;
+        word-break: break-word;
+    }
+    .marathon-title {
+        font-size: 18px;
+        margin: 0 0 10px 0;
+        color: #333;
+        font-weight: bold;
+        word-break: break-word;
+        white-space: normal;
+    }
+    .marathon-meta {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #555;
+    }
+    .marathon-description {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
+        word-break: break-word;
+    }
+    .marathon-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+    .marathon-actions-menu {
+        display: none;
+        position: absolute;
+        top: 30px;
+        right: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 10;
+        width: 150px;
+    }
+    .marathon-actions-menu button {
+        background: none;
+        border: none;
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+    }
+    .marathon-actions-menu button:hover {
+        background: #f0f0f0;
+    }
+    .add-marathon-btn {
+        background-color: #ffebcd;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: auto;
+    }
+
+    .marathon-actions-menu button.disabled-button {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f0f0f0;
+        color: #999;
+    }
+
+    .marathon-actions-menu button.disabled-button:hover {
+        background-color: #f0f0f0;
+    }
 
     .modal {
         display: none;
@@ -615,4 +705,99 @@ body {
         border-radius: 4px;
         box-sizing: border-box;
         margin-bottom: 10px;
+    }
+
+    /* ===== ФОРМА ДОБАВЛЕНИЯ МАРАФОНА (СТИЛЬ КАК У АДМИНА) ===== */
+    #addMarathonForm {
+        display: none;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    #addMarathonForm h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 18px;
+    }
+
+    #addMarathonForm .form-group {
+        margin-bottom: 15px;
+    }
+
+    #addMarathonForm .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: normal;
+        color: #333;
+    }
+
+    #addMarathonForm .form-group input[type="text"],
+    #addMarathonForm .form-group input[type="number"],
+    #addMarathonForm .form-group textarea,
+    #addMarathonForm .form-group select {
+        width: 100%;
+        max-width: none;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+    /* Делаем поле "Количество книг" компактным (80px) */
+    #addMarathonForm #marathonBookCount {
+        width: 80px;
+    }
+
+    #addMarathonForm .form-group textarea {
+        height: auto;
+        resize: vertical;
+    }
+
+    #addMarathonForm .duration-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #addMarathonForm .duration-selector input[type="number"] {
+        width: 80px;
+        flex-shrink: 0;
+    }
+
+    #addMarathonForm .duration-selector select {
+        flex: 1;
+    }
+
+    #addMarathonForm .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    #addMarathonForm .form-actions button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    #addMarathonForm .form-actions .submit-btn {
+        background-color: #ffebcd;
+        color: black;
+    }
+
+    #addMarathonForm .form-actions .cancel-btn {
+        background-color: #F08080;
+        color: black;
+    }
+
+    #addMarathonForm .form-actions .submit-btn:hover,
+    #addMarathonForm .form-actions .cancel-btn:hover {
+        opacity: 0.9;
     }
