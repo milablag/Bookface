@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
 from services.user_service import get_user_profile_image, get_user_books, add_book_to_category, move_book_category
 from services.book_service import get_tinder_books, add_to_favorites, get_favorites, remove_from_favorites
+from services.marathon_service import get_user_active_marathons, get_user_completed_marathons, join_marathon, leave_marathon
 
 user_bp = Blueprint('user', __name__)
 
@@ -86,4 +87,44 @@ def remove_from_favorites_route():
     book_id = request.json.get('book_id')
 
     result = remove_from_favorites(user_id, book_id)
+    return jsonify(result)
+
+@user_bp.route('/get_active_marathons')
+def get_active_marathons_route():
+    if 'user_id' not in session:
+        return jsonify([])
+
+    user_id = session['user_id']
+    marathons = get_user_active_marathons(user_id)
+    return jsonify(marathons)
+
+@user_bp.route('/get_completed_marathons')
+def get_completed_marathons_route():
+    if 'user_id' not in session:
+        return jsonify([])
+
+    user_id = session['user_id']
+    marathons = get_user_completed_marathons(user_id)
+    return jsonify(marathons)
+
+@user_bp.route('/join_marathon', methods=['POST'])
+def join_marathon_route():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Доступ запрещен'})
+
+    user_id = session['user_id']
+    marathon_id = request.json.get('marathon_id')
+
+    result = join_marathon(user_id, marathon_id)
+    return jsonify(result)
+
+@user_bp.route('/leave_marathon', methods=['POST'])
+def leave_marathon_route():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Доступ запрещен'})
+
+    user_id = session['user_id']
+    marathon_id = request.json.get('marathon_id')
+
+    result = leave_marathon(user_id, marathon_id)
     return jsonify(result)

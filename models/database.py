@@ -49,7 +49,8 @@ def create_tables():
                 type VARCHAR(20) NOT NULL CHECK (type IN ('system', 'user')),
                 book_count INTEGER NOT NULL,
                 duration VARCHAR(50),
-                description TEXT
+                description TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
@@ -67,6 +68,27 @@ def create_tables():
                 user_id INTEGER NOT NULL REFERENCES users(id),
                 book_id INTEGER NOT NULL REFERENCES books(id),
                 PRIMARY KEY (user_id, book_id)
+            )
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_marathons (
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                marathon_id INTEGER NOT NULL REFERENCES marathons(id),
+                progress INTEGER DEFAULT 0,
+                is_creator BOOLEAN DEFAULT FALSE,
+                PRIMARY KEY (user_id, marathon_id)
+            )
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS marathon_progress (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                marathon_id INTEGER NOT NULL REFERENCES marathons(id),
+                notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (user_id, marathon_id)
             )
         """)
 
