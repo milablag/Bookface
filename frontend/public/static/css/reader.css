@@ -1,0 +1,112 @@
+/* reader.css — типографика контента страниц */
+
+.page-content {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    line-height: 1.8;
+    color: #2c1810;
+    text-align: justify;
+    hyphens: auto;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+/* Обычные абзацы */
+.page-content p {
+    margin: 0 0 0.1em 0;
+    text-indent: 1.8em;
+    line-height: 1.8;
+}
+
+/* Первый абзац — без отступа */
+.page-content p:first-child {
+    text-indent: 0;
+}
+
+/* Абзац после заголовка — без отступа */
+.page-content h1 + p,
+.page-content h2 + p,
+.page-content h3 + p {
+    text-indent: 0;
+}
+
+/* Диалог — без красной строки */
+.page-content p.dialog {
+    text-indent: 0;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    padding-left: 0.2em;
+}
+
+/* Между обычными абзацами — нет отступа, только красная строка */
+.page-content p + p {
+    margin-top: 0;
+}
+
+/* После диалога отступ чуть больше */
+.page-content p.dialog + p:not(.dialog) {
+    margin-top: 0.4em;
+}
+.page-content p + p.dialog {
+    margin-top: 0.4em;
+}
+
+/* Заголовки */
+.page-content h1 {
+    font-size: 1.35em;
+    font-weight: 700;
+    text-align: center;
+    margin: 1.2em 0 0.8em;
+    color: #2c1810;
+    text-indent: 0;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+}
+.page-content h2 {
+    font-size: 1.12em;
+    font-weight: 700;
+    text-align: center;
+    margin: 1.1em 0 0.7em;
+    color: #3d2317;
+    text-indent: 0;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+}
+.page-content h3 {
+    font-size: 1.0em;
+    font-weight: 700;
+    margin: 0.9em 0 0.5em;
+    color: #4a2a1a;
+    text-indent: 0;
+}
+
+/* Цитата */
+.page-content blockquote {
+    margin: 0.7em 1.2em;
+    padding: 0.3em 0.9em;
+    border-left: 3px solid #c4a882;
+    background: rgba(196,168,130,0.1);
+    font-style: italic;
+    color: #5c3624;
+    text-indent: 0;
+    line-height: 1.7;
+}
+
+/* Разделитель */
+.page-content hr {
+    border: none;
+    border-top: 1px solid #c4a882;
+    margin: 1em auto;
+    width: 40%;
+}
+
+/* Номер страницы внизу */
+.page-content .page-number,
+.page-number {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #e0d5c5;
+    color: #a88962;
+    font-size: 0.82em;
+    font-family: 'Georgia', serif;
+}
