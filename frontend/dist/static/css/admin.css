@@ -1,0 +1,1199 @@
+html {
+        height: 100%;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background: transparent;
+    }
+
+    /* Фон вынесен в pseudo-element — GPU-compositing, без лагов при скролле */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(90deg, #faf0cd, #fab397);
+    }
+
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .main-content {
+        display: flex;
+        flex: 1;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: black;
+        padding: 50px 0;
+        transition: width 0.3s;
+        z-index: 1000;
+    }
+
+    .sidebar.collapsed {
+        width: 80px;
+    }
+
+    .avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #ddd;
+        margin: 0 auto;
+        display: block;
+        object-fit: cover;
+    }
+
+    .username {
+        text-align: center;
+        margin: 10px 0 30px;
+        font-weight: bold;
+        transition: opacity 0.3s;
+        height: 20px;
+    }
+
+    .sidebar.collapsed .username {
+        opacity: 0;
+        height: 0;
+        margin: 0;
+        visibility: hidden;
+    }
+
+    .nav-container {
+        position: absolute;
+        top: 145px;
+        left: 0;
+        right: 0;
+        padding: 0 20px;
+    }
+
+    .nav-item {
+        padding: 12px 15px;
+        margin: 5px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .sidebar.collapsed .nav-item {
+        justify-content: center;
+        padding: 12px 0;
+    }
+
+    .nav-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .nav-item i {
+        margin-right: 10px;
+        font-size: 20px;
+    }
+
+    .sidebar.collapsed .nav-item i {
+        margin-right: 0;
+    }
+
+    .nav-text {
+        white-space: nowrap;
+    }
+
+    .sidebar.collapsed .nav-text {
+        display: none;
+    }
+
+    .toggle-btn {
+        position: absolute;
+        bottom: 80px;
+        left: 20px;
+        cursor: pointer;
+        font-size: 20px;
+    }
+
+    .sidebar.collapsed .toggle-btn {
+        left: 30px;
+    }
+
+    .header {
+        width: 100%;
+        background-color: white;
+        padding: 15px 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        text-align: center;
+        position: fixed;
+        top: 0;
+        left: 200px;
+        z-index: 99;
+        transition: width 0.3s, left 0.3s;
+    }
+
+    .sidebar.collapsed ~ .content-wrapper .header {
+        width: calc(100% - 80px);
+        left: 80px;
+    }
+
+    .content-wrapper {
+        flex: 1;
+        margin-left: 270px;
+        transition: margin-left 0.3s;
+        padding-top: 60px;
+        min-height: 100vh; /* sidebar background stays full height */
+    }
+
+    .sidebar.collapsed ~ .content-wrapper {
+        margin-left: 100px;
+    }
+
+    .content {
+        padding: 20px;
+        margin-top: 0;
+    }
+
+    .site-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+    }
+
+    .search-container {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-container input {
+        flex: 1;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        height: 40px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+    .search-container button {
+        padding: 0 25px;
+        height: 40px;
+        line-height: 40px;
+        background-color: #ffebcd;
+        color: black;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        white-space: nowrap;
+        box-sizing: border-box;
+        transition: background-color 0.3s;
+    }
+
+    .add-book-btn {
+        background-color: #ffebcd !important;
+    }
+
+    .show-all-btn {
+        background-color: #F08080 !important;
+    }
+
+    #addBookForm {
+        display: block;
+        margin: 20px 0;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        /* Плавное раскрытие через max-height */
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        transition: max-height 0.28s ease, opacity 0.22s ease, padding 0.28s ease, margin 0.28s ease;
+    }
+
+    #addBookForm.open {
+        max-height: 1200px;
+        opacity: 1;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    #addBookForm h3 {
+        margin-top: 0;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .form-group textarea {
+        height: 100px;
+        resize: vertical;
+    }
+
+    .form-group input[type="number"] {
+        width: 150px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .form-actions button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .submit-btn {
+        background-color: #ffebcd;
+        color: black;
+    }
+
+    .cancel-btn {
+        background-color: #F08080;
+        color: black;
+    }
+
+    .search-results {
+        margin-top: 20px;
+    }
+
+    .book-card {
+        display: flex;
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        overflow: hidden;
+        position: relative;
+        contain: layout style; /* изолируем layout — меньше reflow при скролле */
+    }
+
+    .book-image {
+        width: 170px;
+        height: 265px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: #e8e8e8; /* серый пока грузится картинка */
+    }
+
+    .book-info {
+        padding: 15px;
+        flex-grow: 1;
+    }
+
+/* Убираем полоску под названием книги */
+.book-title {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+    border-bottom: none;  /* Убираем полоску */
+}
+
+    .book-meta {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .book-description {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
+        word-break: break-word;
+    }
+
+    .book-options {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .book-actions {
+        display: none;
+        position: absolute;
+        top: 40px;
+        right: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 10;
+        width: 150px;
+    }
+
+    .book-actions button {
+        background: none;
+        border: none;
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .book-actions button:hover {
+        background: #f0f0f0;
+    }
+
+    .no-books {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+
+    #editBookModal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+        z-index: 2000;
+        width: 90%;
+        max-width: 720px;
+        max-height: 90vh;
+        overflow: hidden;
+        display: none;
+        flex-direction: column;
+    }
+
+    #editBookModal.open {
+        display: flex;
+    }
+
+    #editBookModal h3 {
+        margin: 0;
+        padding: 20px 24px 16px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #222;
+        border-bottom: 1px solid #f0f0f0;
+        flex-shrink: 0;
+        padding-right: 48px;
+    }
+
+    #editBookModal form {
+        overflow-y: auto;
+        padding: 20px 24px 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    #editBookModal .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+    }
+
+    #editBookModal .form-grid .form-group {
+        margin-bottom: 14px;
+    }
+
+    #editBookModal .form-group.full-width {
+        grid-column: 1 / -1;
+        margin-bottom: 14px;
+    }
+
+    #editBookModal .form-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    #editBookModal .form-group input,
+    #editBookModal .form-group textarea,
+    #editBookModal .form-group select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 14px;
+        background: #fafafa;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        color: #222;
+    }
+
+    #editBookModal .form-group input:focus,
+    #editBookModal .form-group textarea:focus,
+    #editBookModal .form-group select:focus {
+        outline: none;
+        border-color: #F08080;
+        box-shadow: 0 0 0 3px rgba(240,128,128,0.12);
+        background: #fff;
+    }
+
+    #editBookModal .form-group textarea {
+        height: 80px;
+        resize: vertical;
+    }
+
+    #editBookModal .form-group input[type="number"] {
+        width: 100%;
+    }
+
+    #editBookModal .form-group input[type="file"] {
+        padding: 6px 10px;
+        font-size: 13px;
+        background: #f5f5f5;
+        cursor: pointer;
+    }
+
+    #editBookModal .section-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin: 10px 0 10px;
+        padding-top: 10px;
+        border-top: 1px solid #f0f0f0;
+        grid-column: 1 / -1;
+    }
+
+    #editBookModal .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid #f0f0f0;
+        flex-shrink: 0;
+    }
+
+    #editBookModal .submit-btn {
+        flex: 1;
+        background: #F08080;
+        color: #fff;
+        border: none;
+        padding: 11px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    #editBookModal .submit-btn:hover {
+        background: #e06060;
+    }
+
+    #editBookModal .cancel-btn {
+        flex: 1;
+        background: #f5f5f5;
+        color: #555;
+        border: none;
+        padding: 11px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    #editBookModal .cancel-btn:hover {
+        background: #ebebeb;
+    }
+
+    #editBookModal .close-btn {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        background: #f5f5f5;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        transition: background 0.2s, color 0.2s;
+        z-index: 1;
+        line-height: 1;
+    }
+
+    #editBookModal .close-btn:hover {
+        background: #F08080;
+        color: #fff;
+    }
+
+    .marathons-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .add-marathon-btn {
+        background-color: #ffebcd;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: auto;
+    }
+
+    .marathon-tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+        position: relative;
+    }
+
+    .marathon-tab-button {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-right: 5px;
+    }
+
+    .marathon-tab-button.active {
+        border-bottom: 3px solid #F08080;
+        color: #F08080;
+        font-weight: bold;
+    }
+
+    .marathon-tab-content {
+        display: none;
+    }
+
+    .marathon-tab-content.active {
+        display: block;
+        margin-top: 20px;
+    }
+
+    .marathon-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .marathon-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+        word-break: break-word;
+    }
+
+    .marathon-title {
+        font-size: 18px;
+        margin: 0 0 10px 0;
+        color: #333;
+        font-weight: bold;
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    .marathon-meta {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .marathon-description {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
+        word-break: break-word;
+    }
+
+    .marathon-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
+    .marathon-actions-menu {
+        display: none;
+        position: absolute;
+        top: 30px;
+        right: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 10;
+        width: 150px;
+    }
+
+    .marathon-actions-menu button {
+        background: none;
+        border: none;
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .marathon-actions-menu button:hover {
+        background: #f0f0f0;
+    }
+
+    #addMarathonForm {
+        display: none;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    .duration-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .duration-selector input {
+        width: 80px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 50%;
+        max-width: 600px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: black;
+    }
+
+    @media (max-width: 600px) {
+        .book-card {
+            flex-direction: column;
+        }
+
+        .book-image {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+        }
+
+        .search-container {
+            flex-direction: column;
+        }
+
+        .search-container input,
+        .search-container button {
+            width: 100%;
+        }
+
+        .marathon-list {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-content {
+            width: 90%;
+        }
+    }
+
+    .status-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: none;
+    }
+
+    .status-message.show {
+        display: block;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+
+    }
+
+    .form-control[readonly] {
+        background-color: #f5f5f5;
+        cursor: default;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+.file-indicators {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.file-indicators span {
+    color: #555;
+}
+
+.file-indicators i {
+    margin-right: 5px;
+    color: #888;
+}
+
+.pdf-status, .audio-status {
+    color: #555;
+}
+
+.pdf-status span, .audio-status span {
+    color: #555 !important;
+}
+
+.file-indicators .fa-check-circle {
+    color: #4CAF50;
+}
+
+.file-indicators .fa-times-circle {
+    color: #f44336;
+}
+
+/* Стили для внешних книг в поиске */
+.book-card.external-importable {
+    border: 2px solid #4CAF50;
+    transition: all 0.3s ease;
+}
+
+.book-card.external-importable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.book-card.external-imported {
+    border: 2px solid #cccccc;
+    opacity: 0.8;
+}
+
+/* Разделитель между секциями */
+.search-results h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ddd;
+    color: #333;
+}
+
+.search-results h3:first-of-type {
+    margin-top: 0;
+}
+
+/* Стили для внешних книг в поиске */
+.book-card[style*="border: 2px solid #4CAF50"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Разделитель между секциями */
+.search-results h3 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ddd;
+}
+
+/* Стиль для внешних книг с зелёной рамкой */
+.book-card[style*="border: 2px solid #4CAF50"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* ====== ПОЛНОСТЬЮ УБИРАЕМ ВСЕ ПОЛОСКИ ПОД НАЗВАНИЕМ КНИГИ ====== */
+.book-card .book-title,
+.book-info .book-title,
+.book-card h3,
+.book-info h3,
+.book-card h3.book-title,
+.book-info h3.book-title {
+    border-bottom: none !important;
+    border-bottom-width: 0 !important;
+    border-bottom-style: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Также убираем возможный <hr> после заголовка */
+.book-card hr,
+.book-info hr {
+    display: none !important;
+}
+
+/* Убираем любую линию под заголовком */
+.book-title::after,
+.book-card h3::after {
+    display: none !important;
+}
+/* ====== AUDIO TRACKS UI ====== */
+.audio-tracks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+    min-height: 0;
+}
+
+.audio-track-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: background 0.15s;
+}
+
+.audio-track-row:hover {
+    background: #f0f4ff;
+}
+
+.audio-track-row.existing-track {
+    background: #f0fff4;
+    border-color: #b2dfdb;
+}
+
+.audio-track-row .track-num {
+    width: 24px;
+    height: 24px;
+    background: #5c6bc0;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.audio-track-row.existing-track .track-num {
+    background: #43a047;
+}
+
+.audio-track-row .track-title {
+    flex: 1;
+    font-size: 13px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.audio-track-row .track-title-input {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.audio-track-row .track-file-input {
+    flex: 1;
+    font-size: 12px;
+}
+
+.track-play-link {
+    color: #43a047;
+    font-size: 18px;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: transform 0.15s;
+}
+
+.track-play-link:hover {
+    transform: scale(1.2);
+}
+
+.remove-track-btn {
+    background: none;
+    border: none;
+    color: #e53935;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.remove-track-btn:hover {
+    background: #fdecea;
+}
+
+.add-track-btn {
+    background: #5c6bc0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.add-track-btn:hover {
+    background: #3949ab;
+}
+
+/* ─── ПАГИНАЦИЯ КНИГ ─────────────────────────────────────────────────────── */
+
+.books-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 0 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #444;
+    transition: background 0.15s, border-color 0.15s;
+    font-weight: 500;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #faf0cd;
+    border-color: #fab397;
+    color: #333;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.pagination-pages {
+    display: flex;
+    gap: 4px;
+}
+
+.pagination-page-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    color: #444;
+    transition: background 0.15s, border-color 0.15s;
+    font-weight: 500;
+}
+
+.pagination-page-btn:hover:not(.active) {
+    background: #faf0cd;
+    border-color: #fab397;
+}
+
+.pagination-page-btn.active {
+    background: linear-gradient(90deg, #faf0cd, #fab397);
+    border-color: #fab397;
+    color: #333;
+    font-weight: 700;
+    cursor: default;
+}
+
+.pagination-info {
+    font-size: 13px;
+    color: #888;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* ── Skeleton loading ─────────────────────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position:  600px 0; }
+}
+
+.skeleton-card {
+    display: flex;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.skeleton-block {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 600px 100%;
+    animation: skeleton-shimmer 1.4s infinite linear;
+    border-radius: 4px;
+}
+
+.skeleton-img {
+    width: 170px;
+    height: 265px;
+    flex-shrink: 0;
+    border-radius: 0;
+}
+
+.skeleton-info {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.skeleton-title  { height: 22px; width: 60%; }
+.skeleton-meta   { height: 14px; width: 40%; }
+.skeleton-meta2  { height: 14px; width: 30%; }
+.skeleton-desc   { height: 14px; width: 80%; margin-top: 6px; }
+.skeleton-desc2  { height: 14px; width: 65%; }
+
+/* ── Book card & image loading ────────────────────────────────────────────── */
+/* Карточки появляются сразу — без задержки и анимации */
+.book-card {
+    /* анимация убрана: карточки рендерятся из кэша мгновенно */
+}
+
+/* Картинки: если уже в кэше браузера — сразу видны (класс .loaded ставится в JS);
+   если грузятся впервые — плавно проявляются */
+.book-image {
+    /* opacity убрана — картинки видны сразу, серый фон карточки служит placeholder */
+}
+
+/* Контейнер страниц: без transition — мгновенная смена */
+#searchResults {
+    transition: none;
+}
+
+/* ── Скроллбар: полностью скрыт ─────────────────────────────────────────── */
+html {
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE/Edge */
+}
+html::-webkit-scrollbar {
+    display: none;                  /* Chrome / Safari / Opera */
+}
+
+/* ── Мгновенные переходы между секциями (без анимации) ──────────────────── */
+#libraryContent,
+#marathonsContent {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Убираем задержку у skeleton — не нужна на переключении страниц */
+.skeleton-card {
+    animation-duration: 1.0s;
+}

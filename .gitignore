@@ -1,19 +1,17 @@
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-
-venv/
+pycache/
+*.pyc
+*.pyo
 .env
-.venv/
-ENV/
+*.env.local
 
 .idea/
 .vscode/
-*.swp
-*.swo
-*~
+*.iml
 
-config.py
-*.env
+postgres_data/
+minio_data/
+
+.DS_Store
+Thumbs.db
+
+*.log
