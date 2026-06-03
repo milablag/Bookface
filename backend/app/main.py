@@ -2,11 +2,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.database import init_db
+from app.routers import auth, users, profile
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    try:
+        from app.services.minio_service import init_minio_bucket
+        init_minio_bucket()
+    except Exception as e:
+        print(f"MinIO не доступен: {e}")
     yield
 
 
@@ -26,6 +32,10 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+app.include_router(auth.router,    prefix="/api/auth",    tags=["auth"])
+app.include_router(users.router,   prefix="/api/users",   tags=["users"])
+app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
 
 
 @app.get("/api/health")
