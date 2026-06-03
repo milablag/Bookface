@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.database import init_db
-from app.routers import auth, users, profile
+from app.routers import auth, users, profile, books
 
 
 @asynccontextmanager
@@ -36,6 +36,7 @@ app.add_middleware(
 app.include_router(auth.router,    prefix="/api/auth",    tags=["auth"])
 app.include_router(users.router,   prefix="/api/users",   tags=["users"])
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
+app.include_router(books.router,   prefix="/api/books",   tags=["books"])
 
 
 @app.get("/api/health")
